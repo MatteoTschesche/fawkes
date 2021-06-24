@@ -40,6 +40,7 @@ using namespace std;
 TrackedLineInfo::TrackedLineInfo(fawkes::tf::Transformer *tfer,
                                  const string &           input_frame_id,
                                  const string &           tracking_frame_id,
+                                 const string &           fixed_frame_id,
                                  float                    cfg_switch_tolerance,
                                  unsigned int             cfg_moving_avg_len,
                                  fawkes::Logger *         logger,
@@ -48,6 +49,7 @@ TrackedLineInfo::TrackedLineInfo(fawkes::tf::Transformer *tfer,
   visibility_history(0),
   transformer(tfer),
   input_frame_id(input_frame_id),
+  fixed_frame_id(fixed_frame_id),
   tracking_frame_id(tracking_frame_id),
   cfg_switch_tolerance(cfg_switch_tolerance),
   history(cfg_moving_avg_len),
@@ -145,6 +147,48 @@ TrackedLineInfo::update(LineInfo &linfo)
 	this->smooth.length         = length_sum / sz;
 	this->smooth.line_direction = line_direction_sum / sz;
 	this->smooth.point_on_line  = point_on_line_sum / sz;
+
+	this->history.push_back(linfo);
+
+
+	fawkes::tf::Stamped<fawkes::tf::Point> map_point_new(fawkes::tf::Point(linfo.base_point[0],
+	                                                                       linfo.base_point[1],
+	                                                                       linfo.base_point[2]),
+	                                              fawkes::Time(0, 0),
+	                                              input_frame_id);
+	fawkes::tf::Stamped<fawkes::tf::Point> ep1_new(fawkes::tf::Point(linfo.end_point_1[0],
+	                                                                 linfo.end_point_1[1],
+	                                                                 linfo.end_point_1[2]),
+	                                              fawkes::Time(0, 0),
+	                                              input_frame_id);
+	fawkes::tf::Stamped<fawkes::tf::Point> ep2_new(fawkes::tf::Point(linfo.end_point_2[0],
+	                                                                 linfo.end_point_2[1],
+	                                                                 linfo.end_point_2[2]),
+	                                              fawkes::Time(0, 0),
+	                                              input_frame_id);
+  // transform to fixed frame
+	try {
+		transformer->transform_point(fixed_frame_id, map_point_new, map_point_new);
+		transformer->transform_point(fixed_frame_id, ep1_new, ep1_new);
+		transformer->transform_point(fixed_frame_id, ep2_new, ep2_new);
+    this->map.base_point[0] = map_point_new[0];
+    this->map.base_point[1] = map_point_new[1];
+    this->map.base_point[2] = map_point_new[2];
+
+    this->map.end_point_1[0] = ep1_new[0];
+    this->map.end_point_1[1] = ep1_new[1];
+    this->map.end_point_1[2] = ep1_new[2];
+
+    this->map.end_point_2[0] = ep2_new[0];
+    this->map.end_point_2[1] = ep2_new[1];
+    this->map.end_point_2[2] = ep2_new[2];
+
+	} catch (fawkes::tf::TransformException &e) {
+		logger->log_warn(plugin_name.c_str(),
+		                 "Can't transform to %s. Attempting to track in %s.",
+		                 fixed_frame_id.c_str(),
+		                 input_frame_id.c_str());
+	}
 
 	Eigen::Vector3f x_axis(1, 0, 0);
 
