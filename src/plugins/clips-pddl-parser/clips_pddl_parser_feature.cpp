@@ -96,9 +96,7 @@ PDDLCLIPSFeature::parse_domain(std::string env_name, std::string domain_file)
 		buffer << df.rdbuf();
 		domain = PddlParser::parseDomain(buffer.str());
 	} catch (PddlParserException &e) {
-		logger_->log_error(("PDDLCLIPS|" + env_name).c_str(),
-		                   "Failed to parse domain: %s",
-		                   e.what_no_backtrace());
+		logger_->log_error(("PDDLCLIPS|" + env_name).c_str(), "Failed to parse domain: %s", e.what());
 		return;
 	}
 	for (auto &type : domain.types) {
