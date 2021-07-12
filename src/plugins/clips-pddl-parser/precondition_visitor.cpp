@@ -51,7 +51,7 @@ PreconditionToCLIPSFactVisitor::PreconditionToCLIPSFactVisitor(const string &par
  * @return An empty vector.
  */
 vector<string>
-PreconditionToCLIPSFactVisitor::operator()(QuantifiedFormula &q) const
+PreconditionToCLIPSFactVisitor::operator()(pddl_parser::QuantifiedFormula &q) const
 {
 	throw PddlParserException("QuantifiedFormulas are not supported in CLIPS yet.");
 	return vector<string>();
@@ -65,7 +65,7 @@ PreconditionToCLIPSFactVisitor::operator()(QuantifiedFormula &q) const
  * @return A vector that only contains the atom as is.
  */
 vector<string>
-PreconditionToCLIPSFactVisitor::operator()(Atom &a) const
+PreconditionToCLIPSFactVisitor::operator()(pddl_parser::Atom &a) const
 {
 	return vector<string>({a});
 }
@@ -78,7 +78,7 @@ PreconditionToCLIPSFactVisitor::operator()(Atom &a) const
  * @return A vector of strings, each string is a properly formed CLIPS fact.
  */
 vector<string>
-PreconditionToCLIPSFactVisitor::operator()(Predicate &p) const
+PreconditionToCLIPSFactVisitor::operator()(pddl_parser::Predicate &p) const
 {
 	vector<string> res;
 	stringstream   namestream;

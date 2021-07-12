@@ -46,7 +46,7 @@ EffectToCLIPSFactVisitor::EffectToCLIPSFactVisitor(const string &pddl_operator, 
  * @return An empty vector.
  */
 vector<string>
-EffectToCLIPSFactVisitor::operator()(QuantifiedFormula &q) const
+EffectToCLIPSFactVisitor::operator()(pddl_parser::QuantifiedFormula &q) const
 {
 	throw PddlParserException("QuantifiedFormulas are not supported in CLIPS yet.");
 	return vector<string>();
@@ -60,7 +60,7 @@ EffectToCLIPSFactVisitor::operator()(QuantifiedFormula &q) const
  * @return A vector that only contains the atom as is.
  */
 vector<string>
-EffectToCLIPSFactVisitor::operator()(Atom &a) const
+EffectToCLIPSFactVisitor::operator()(pddl_parser::Atom &a) const
 {
 	return vector<string>({a});
 }
@@ -73,7 +73,7 @@ EffectToCLIPSFactVisitor::operator()(Atom &a) const
  * @return A vector of strings, each string is a properly formed CLIPS fact.
  */
 vector<string>
-EffectToCLIPSFactVisitor::operator()(Predicate &p) const
+EffectToCLIPSFactVisitor::operator()(pddl_parser::Predicate &p) const
 {
 	vector<string> res;
 	if (p.function == "and") {
