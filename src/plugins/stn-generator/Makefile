@@ -14,7 +14,7 @@
 
 BASEDIR = ../../..
 include $(BASEDIR)/etc/buildsys/config.mk
-include $(LIBSRCDIR)/pddl_parser/pddl_parser.mk
+include $(BUILDSYSDIR)/pddl_parser.mk
 include $(FAWKES_BASEDIR)/src/plugins/mongodb/mongodb.mk
 
 LIBS_stn_generator = m fawkescore fawkesutils fawkesaspects fawkesbaseapp \
